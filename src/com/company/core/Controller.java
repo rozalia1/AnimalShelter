@@ -1,7 +1,7 @@
 package com.company.core;
 
 public interface Controller {
-
+    String add(Object obj);
     String addCage(String cageType, String cageName);
     String addDecoration(String type);
     String insertDecoration(String cageName, String decorationType);

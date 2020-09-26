@@ -31,6 +31,11 @@ public class ContollerClass implements Controller {
     }
 
     @Override
+    public String add(Object obj) {
+        return "";
+    }
+
+    @Override
     public String addCage(String cageType, String cageName) {
         Cage c1;
         if ("BigCage".equals(cageType)) {
