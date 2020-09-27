@@ -1,9 +1,9 @@
 package com.company.enums;
 
 public enum TreatmentPhase {
-    None,
-    ToCure,
-    Started,
-    InProgress,
-    Cured,
+    NONE,
+    CURE,
+    STARTED,
+    PROGRESS,
+    CURED,
 }

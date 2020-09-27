@@ -11,11 +11,6 @@ import static com.company.messages.ConstantMessages.SUCCESSFULLY_ADDED_DECORATIO
 import static com.company.messages.ExceptionMessages.NO_DECORATION_FOUND;
 
 public class DogCage extends Cage {
-    // da se pomisli tezi konstanti kak moje da se napravqt po-optimalno i dali da ne sa nqkyde drugade, napr. v klasa
-    // kudeto shte se vikat tezi metodi
-    private final static int BIG_CAGE_CAPACITY = 30;
-    private final static int SMALL_CAGE_CAPACITY = 10;
-
     CageType type;
 
     public DogCage(String cageName, int capacity, CageType type) {

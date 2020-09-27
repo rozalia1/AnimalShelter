@@ -1,7 +1,6 @@
 package com.company.models.cage;
 
 import com.company.models.animals.Animal;
-import com.company.models.animals.Dogs;
 import com.company.models.decoration.Decoration;
 
 import java.util.ArrayList;
