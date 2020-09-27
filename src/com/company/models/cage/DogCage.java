@@ -7,6 +7,8 @@ import com.company.models.decoration.Decoration;
 import java.util.Collection;
 
 import static com.company.messages.ConstantMessages.NOT_ENOUGH_CAPACITY;
+import static com.company.messages.ConstantMessages.SUCCESSFULLY_ADDED_DECORATION_IN_CAGE;
+import static com.company.messages.ExceptionMessages.NO_DECORATION_FOUND;
 
 public class DogCage extends Cage {
     // da se pomisli tezi konstanti kak moje da se napravqt po-optimalno i dali da ne sa nqkyde drugade, napr. v klasa
@@ -29,18 +31,17 @@ public class DogCage extends Cage {
         this.type = type;
     }
 
-    @Override
     public void addAnimal(Animal dog) {
         Collection<Animal> dogs = getAnimals();
         if(dogs.size() == capacity) {
             throw new IllegalArgumentException(NOT_ENOUGH_CAPACITY);
         }
 
-        setAnimal(dog);
+        addAnimal(dog);
     }
 
-    @Override
-    public void addDecoration(Decoration dec) {
-        setDecoration(dec);
+    public String addDecoration(Decoration dec) {
+        addDecoration(dec);
+        return String.format(SUCCESSFULLY_ADDED_DECORATION_IN_CAGE, this.type, getName());
     }
 }
