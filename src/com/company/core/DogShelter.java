@@ -1,25 +1,36 @@
 package com.company.core;
 
+import com.company.enums.TreatmentPhase;
 import com.company.enums.TreatmentType;
 import com.company.models.animals.Animal;
 import com.company.models.animals.Dog;
+import com.company.models.cage.CageController;
 import com.company.models.cage.DogCage;
+import com.company.models.decoration.Decoration;
+import com.company.models.person.Person;
 import com.company.repositories.DecorationRepo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static com.company.messages.ConstantMessages.*;
 
 public class DogShelter implements Shelter {
     DecorationRepo decorationRepo;
     Collection<DogCage> cages;
     Collection<Dog> dogs;
     Collection<Dog> sickDogs;
+    Collection<Dog> adoptedDogs;
+    Collection<Person> people;
+
+    CageController cageController;
 
     public DogShelter() {
         this.decorationRepo = new DecorationRepo();
         this.cages = new ArrayList<>();
         this.dogs = new ArrayList<>();
-        this.sickDogs = new ArrayList<>();
+        this.sickDogs = new ArrayList<Dog>();
+        this.cageController = new CageController();
     }
 
     public DecorationRepo getDecorations() {
@@ -28,10 +39,6 @@ public class DogShelter implements Shelter {
 
     public Collection<DogCage> getCages() {
         return cages;
-    }
-
-    public void addCage(DogCage cage) {
-        this.cages.add(cage);
     }
 
     public Collection<Dog> getDogs() {
@@ -50,6 +57,23 @@ public class DogShelter implements Shelter {
         this.sickDogs.add(sickDog);
     }
 
+    public void addCage(String cageName, String cageType) {
+        cages.add(cageController.createCage(cageName, cageType));
+    }
+
+    public String addDecoration(String type) {
+        decorationRepo.addDecorationByType(type);
+        return String.format(SUCCESSFULLY_ADDED_DECORATION_TYPE, type);
+    }
+
+    public String insertDecorationToCage(String cageName, String decorationType) {
+        Decoration dec = decorationRepo.findByType(decorationType);
+        DogCage cage = cageController.insertDecorationToCage(cageName, cages, dec);
+
+        this.decorations.remove(dec);
+        return String.format(SUCCESSFULLY_ADDED_DECORATION_IN_CAGE, decorationType, cageName);
+    }
+
     @Override
     public String report() {
         StringBuilder sb = new StringBuilder();
@@ -61,17 +85,68 @@ public class DogShelter implements Shelter {
     }
 
     @Override
-    public String setSickAnimal(Animal a, TreatmentType treatType) {
+    public String setTreatmentType(Animal a, TreatmentType treatType) {
+        if (treatType == TreatmentType.NONE) throw new IllegalArgumentException(ANIMAL_CAN_NOT_NONE);
+
+        a.setTreatType(treatType);
+        a.setTreatPhase(TreatmentPhase.CURE);
+        sickDogs.add((Dog) a);
+        dogs.remove(a);
+        return String.format(SUCCESSFULLY_ADDED_SICK_ANIMAL, "dog");
+    }
+
+    @Override
+    public String treatAnimal(Animal a) {
+        if (a.getTreatPhase() != TreatmentPhase.NONE) throw new IllegalArgumentException(ANIMAL_IS_UNDER_TREATMENT);
+
+        a.setTreatPhase(TreatmentPhase.CURE);
+
         return null;
     }
 
     @Override
-    public String treatAnimal(Animal a, TreatmentType treatType) {
+    public String treatAnimals() {
+        for (Dog sickDog : sickDogs) {
+            if (sickDog.getTreatPhase() == TreatmentPhase.CURE) sickDog.setTreatPhase(TreatmentPhase.STARTED);
+        }
+
         return null;
     }
 
     @Override
-    public boolean isCured() {
+    public boolean isCured(Animal a) {
+        if (a.getTreatPhase() == TreatmentPhase.CURED || a.getTreatPhase() == TreatmentPhase.NONE) return true;
+
         return false;
+    }
+
+    @Override
+    public String adoptAnimal(String animalName, String personName) {
+        Dog d1 = (Dog) findAnimal(animalName);
+        if(isCured(d1)){
+            adoptedDogs.add(d1);
+            dogs.remove(d1);
+            return String.format(ADOPTED_ANIMAL, animalName, personName);
+        }
+
+        return String.format(ANIMAL_IS_UNDER_TREATMENT);
+    }
+
+    @Override
+    public Animal findAnimal(String animalName) {
+        Dog searchedDog = null;
+        for (Dog dog : dogs) {
+            if (dog.getName().equals(animalName)) searchedDog = dog;
+        }
+
+        if (searchedDog == null) throw new IllegalArgumentException();
+
+        return searchedDog;
+    }
+
+    @Override
+    public Decoration findDecoration(String type) {
+
+        return null;
     }
 }

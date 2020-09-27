@@ -4,7 +4,7 @@ import com.company.models.decoration.Decoration;
 
 public interface Repository {
 
-        void add(Decoration decoration);
+        void addDecorationByType(String decType);
 
         boolean remove(Decoration decoration);
 

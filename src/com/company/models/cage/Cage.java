@@ -2,6 +2,7 @@ package com.company.models.cage;
 
 import com.company.models.animals.Animal;
 import com.company.models.decoration.Decoration;
+import com.company.repositories.DecorationRepo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,13 +13,13 @@ import static com.company.messages.ConstantMessages.VALUE_CAGE;
 public abstract class Cage {
     String name;
     int capacity;
-    Collection<Decoration> decorations;
+    Collection<Decoration> cageDecorations;
     Collection<Animal> animals;
 
     protected Cage(String name, int capacity) {
         this.name = name;
         this.capacity = capacity;
-        this.decorations = new ArrayList<>();
+        this.cageDecorations = new ArrayList<>();
         this.animals = new ArrayList<>();
     }
 
@@ -38,8 +39,8 @@ public abstract class Cage {
         this.capacity = capacity;
     }
 
-    public Collection<Decoration> getDecorations() {
-        return decorations;
+    public Collection<Decoration> getCageDecorations() {
+        return cageDecorations;
     }
 
     public Collection<Animal> getAnimals() {
@@ -47,18 +48,18 @@ public abstract class Cage {
     }
 
     public abstract void addAnimal(Animal animal);
-    public abstract String addDecoration(Decoration decoration);
+    public abstract String addDecoration(String type, DecorationRepo decRepo);
 
     public String getInfo() {
         return String.format("%s %s:%n Dog: %s%n Decorations: %d%n Comfort: %d",
                 this.getName(),
                 this.getClass().getSimpleName(),
-                this.animals.isEmpty() ? "none": printAnimals(), this.decorations.size(), this.calculateComfort());
+                this.animals.isEmpty() ? "none": printAnimals(), this.cageDecorations.size(), this.calculateComfort());
     }
 
     public String calculateValue() {
         double sum = 0.0;
-        for (Decoration dec : this.decorations) {
+        for (Decoration dec : this.cageDecorations) {
             sum += dec.getPrice();
         }
 
@@ -71,7 +72,7 @@ public abstract class Cage {
 
     public int calculateComfort() {
         int sum = 0;
-        for (Decoration decoration : decorations) {
+        for (Decoration decoration : cageDecorations) {
             sum += decoration.getComfort();
         }
         return sum;

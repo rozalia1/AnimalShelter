@@ -10,8 +10,8 @@ public class Dog extends Animal {
     DogType type;
     String species;
 
-    public Dog(String name, int order, double price, DogType type, String species) {
-        super(name, order, price);
+    public Dog(String name, double price, DogType type, String species) {
+        super(name, price);
         this.type = type;
         this.species = species;
     }

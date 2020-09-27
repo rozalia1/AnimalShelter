@@ -6,15 +6,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Person {
-    String firstName;
-    String lastName;
-    int age;
+   private String firstName;
+   private String lastName;
+   private int age;
+   private String telephone;
+
     Collection<Animal> adoptedAnimals;
 
-    public Person(String firstName, String lastName, int age) {
+    public Person(String firstName, String lastName, int age, String telephone) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
+        this.telephone = telephone;
         this.adoptedAnimals = new ArrayList<>();
     }
 
@@ -41,6 +44,7 @@ public class Person {
     public void setAge(int age) {
         this.age = age;
     }
+
 
     public Collection<Animal> getAdoptedAnimals() {
         return adoptedAnimals;

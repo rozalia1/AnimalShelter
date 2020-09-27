@@ -1,6 +1,7 @@
 package com.company.core;
 
 import com.company.enums.cage.CageType;
+import com.company.models.cage.Cage;
 import com.company.models.cage.DogCage;
 
 import java.io.BufferedReader;
@@ -12,10 +13,6 @@ import static com.company.messages.ExceptionMessages.*;
 import static com.company.messages.ConstantMessages.*;
 
 public class Run implements RunInter {
-    // moje da izmestim constantite nqkude da sa na 1, kakto suobshteniqta
-    private final static int BIG_CAGE_CAPACITY = 30;
-    private final static int SMALL_CAGE_CAPACITY = 10;
-
     private DogShelter dogShelter;
     private BufferedReader reader;
 
@@ -83,20 +80,8 @@ public class Run implements RunInter {
     public String addCage(String[] data) {
         String cageType = data[0];
         String cageName = data[1];
-        DogCage cage;
 
-        switch(CageType.valueOf(cageType.toUpperCase())) {
-            case SMALL:
-                cage = new DogCage(cageName, SMALL_CAGE_CAPACITY, CageType.SMALL);
-                break;
-            case BIG:
-                cage = new DogCage(cageName, BIG_CAGE_CAPACITY, CageType.BIG);
-                break;
-            default:
-                throw new IllegalArgumentException(INVALID_CAGE_TYPE);
-        }
-
-        this.dogShelter.addCage(cage);
+        this.dogShelter.addCage(cageName, cageType);
         return String.format(SUCCESSFULLY_ADDED_CAGE_TYPE, cageType);
     }
 
@@ -104,7 +89,7 @@ public class Run implements RunInter {
     public String addDecoration(String[] data) {
         String type = data[0];
 
-        return this.controller.addDecoration(type);
+        return this.dogShelter.addDecoration(type);
     }
 
 
@@ -136,7 +121,7 @@ public class Run implements RunInter {
     public String calculateValue(String[] data) {
         String cageName = data[0];
 
-        return this.controller.calculateValue(cageName);
+        return this.Cage.calculateValue(cageName);
     }
 
     public String report() {
