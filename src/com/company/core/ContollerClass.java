@@ -1,15 +1,15 @@
 package com.company.core;
 
 
-import com.company.models.cage.BigCage;
-import com.company.models.cage.Cage;
-import com.company.models.cage.SmallCage;
+import com.company.models.cage.BigICage;
+import com.company.models.cage.ICage;
+import com.company.models.cage.SmallICage;
 import com.company.models.decoration.Bed;
 import com.company.models.decoration.Decoration;
 import com.company.models.decoration.Toy;
-import com.company.models.dogs.BigDogs;
-import com.company.models.dogs.Dogs;
-import com.company.models.dogs.SmallDogs;
+import com.company.models.animals.BigDogs;
+import com.company.models.animals.Dogs;
+import com.company.models.animals.SmallDogs;
 import com.company.repositories.DecorationRepo;
 import com.company.repositories.Repository;
 
@@ -23,11 +23,11 @@ import static com.company.messages.ConstantMessages.*;
 public class ContollerClass implements Controller {
 
     private Repository decorations;
-    private Collection<Cage> cages;
+    private Collection<ICage> ICages;
 
     public ContollerClass() {
         this.decorations = new DecorationRepo();
-        this.cages = new ArrayList<>();
+        this.ICages = new ArrayList<>();
     }
 
     @Override
@@ -37,15 +37,15 @@ public class ContollerClass implements Controller {
 
     @Override
     public String addCage(String cageType, String cageName) {
-        Cage c1;
+        ICage c1;
         if ("BigCage".equals(cageType)) {
-            c1 = new BigCage(cageName);
+            c1 = new BigICage(cageName);
         } else if ("SmallCage".equals(cageType)) {
-            c1 = new SmallCage(cageName);
+            c1 = new SmallICage(cageName);
         } else {
             throw new IllegalArgumentException(INVALID_CAGE_TYPE);
         }
-        this.cages.add(c1);
+        this.ICages.add(c1);
         return String.format(SUCCESSFULLY_ADDED_CAGE_TYPE, cageType);
     }
 
@@ -70,7 +70,7 @@ public class ContollerClass implements Controller {
         if (dec == null) {
             throw new IllegalArgumentException(String.format(NO_DECORATION_FOUND, decorationType));
         }
-        Cage c1 = this.cages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
+        ICage c1 = this.ICages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
         c1.addDecoration(dec);
         this.decorations.remove(dec);
         return String.format(SUCCESSFULLY_ADDED_DECORATION_IN_CAGE, decorationType, cageName);
@@ -87,7 +87,7 @@ public class ContollerClass implements Controller {
             throw new IllegalArgumentException(INVALID_DOG_TYPE);
         }
 
-        Cage c1 = this.cages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
+        ICage c1 = this.ICages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
 
         if (!c1.getClass().getSimpleName().substring(0, 2).equals(dogType.substring(0, 2))) {
             return CAGE_NOT_SUITABLE;
@@ -100,7 +100,7 @@ public class ContollerClass implements Controller {
 
     @Override
     public String feedDog(String cageName) {
-        Cage c1 = this.cages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
+        ICage c1 = this.ICages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
         c1.feed();
         int count = c1.getDog().size();
         return String.format(DOGS_FED, count);
@@ -108,7 +108,7 @@ public class ContollerClass implements Controller {
 
     @Override
     public String calculateValue(String cageName) {
-        Cage c1 = this.cages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
+        ICage c1 = this.ICages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
         double sum = 0.0;
         for (Decoration dec1 : c1.getDecorations()) {
             sum += dec1.getPrice();
@@ -123,7 +123,7 @@ public class ContollerClass implements Controller {
     @Override
     public String report() {
         StringBuilder sb = new StringBuilder();
-        for (Cage c1 : cages) {
+        for (ICage c1 : ICages) {
             sb.append(c1.getInfo());
             sb.append(System.lineSeparator());
         }
