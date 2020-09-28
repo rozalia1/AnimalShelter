@@ -56,18 +56,6 @@ public abstract class Cage {
                 this.animals.isEmpty() ? "none": printAnimals(), this.cageDecorations.size(), this.calculateComfort());
     }
 
-    public String calculateValue() {
-        double sum = 0.0;
-        for (Decoration dec : this.cageDecorations) {
-            sum += dec.getPrice();
-        }
-
-        for (Animal animal : this.animals) {
-            sum += animal.getPrice();
-        }
-
-        return String.format(VALUE_CAGE, this.name, sum);
-    }
 
     public int calculateComfort() {
         int sum = 0;

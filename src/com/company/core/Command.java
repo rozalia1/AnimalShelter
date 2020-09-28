@@ -7,6 +7,9 @@ public enum Command {
         AddDog,
         FeedDog,
         CalculateValue,
+        SetTreatmentType,
+        CheckTreatmentPhase,
+        AdoptAnimal,
         Report,
         Exit
 }

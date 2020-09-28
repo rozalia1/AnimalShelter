@@ -2,6 +2,8 @@ package com.company.core;
 
 import com.company.enums.TreatmentPhase;
 import com.company.enums.TreatmentType;
+import com.company.enums.cage.CageType;
+import com.company.enums.dog.DogType;
 import com.company.models.animals.Animal;
 import com.company.models.animals.Dog;
 import com.company.models.cage.CageController;
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.company.messages.ConstantMessages.*;
-import static com.company.messages.ExceptionMessages.NO_DECORATION_FOUND;
+import static com.company.messages.ExceptionMessages.*;
 
 public class DogShelter implements Shelter {
     DecorationRepo decorationRepo;
@@ -32,6 +34,7 @@ public class DogShelter implements Shelter {
         this.dogs = new ArrayList<>();
         this.sickDogs = new ArrayList<Dog>();
         this.cageController = new CageController();
+        this.adoptedDogs = new ArrayList<Dog>();
     }
 
     public DecorationRepo getDecorations() {
@@ -60,7 +63,7 @@ public class DogShelter implements Shelter {
         return sb.toString();
     }
 
-    @Override
+/*    @Override
     public String setTreatmentType(Animal a, TreatmentType treatType) {
         if (treatType == TreatmentType.NONE) throw new IllegalArgumentException(ANIMAL_CAN_NOT_NONE);
 
@@ -69,14 +72,12 @@ public class DogShelter implements Shelter {
         sickDogs.add((Dog) a);
         dogs.remove(a);
         return String.format(SUCCESSFULLY_ADDED_SICK_ANIMAL, "dog");
-    }
+    }*/
 
     @Override
     public String treatAnimal(Animal a) {
         if (a.getTreatPhase() != TreatmentPhase.NONE) throw new IllegalArgumentException(ANIMAL_IS_UNDER_TREATMENT);
-
         a.setTreatPhase(TreatmentPhase.CURE);
-
         return null;
     }
 
@@ -119,6 +120,18 @@ public class DogShelter implements Shelter {
         return searchedDog;
     }
 
+   @Override
+    public String setTreatmentType(String  animalName, String treatType) {
+        if(!TreatmentType.checkTreatmentType(treatType))throw new  IllegalArgumentException(String.format(INVALID_TREATMENT_TYPE, treatType));
+       Dog d1 = (Dog) findAnimal(animalName);
+            treatType = treatType.toUpperCase();
+           d1.setTreatType(TreatmentType.valueOf(treatType));
+           d1.setTreatPhase(TreatmentPhase.CURE);
+           sickDogs.add(d1);
+           dogs.remove(d1);
+           return String.format(SUCCESSFULLY_ADDED_SICK_ANIMAL, animalName);
+       }
+
     public void addCage(String cageName, String cageType) {
         // check if there is another cage with this name, if so throw exception
         cages.add(cageController.createCage(cageName, cageType));
@@ -143,15 +156,37 @@ public class DogShelter implements Shelter {
     }
 
     public String addDog(String cageName, String dogType, String dogName, String dogSpecies, double price) {
-        Dog createdDog = new Dog();
-        dogs.add(createdDog.addDog(dogType, dogName, dogSpecies, price));
+        if (!DogType.checkDogType(dogType)) {
+            throw new IllegalArgumentException(INVALID_DOG_TYPE);
+        }
+        dogType = dogType.toUpperCase();
+ //       DogType type;
+
+        Dog createdDog = new Dog(dogName, price, DogType.valueOf(dogType), dogSpecies);
+        dogs.add(createdDog);
         for(DogCage cage : cages) {
             if (cage.getName().toLowerCase() == cageName.toLowerCase()) {
                 cage.addAnimal(createdDog);
             }
         }
 
-        return String.format(SUCCESSFULLY_ADDED_DOG_IN_CAGE, dogType, cageName);
+        return String.format(SUCCESSFULLY_ADDED_DOG_IN_CAGE, dogName, cageName);
+
+    }
+
+    public String checkTreatmentPhase(String animalName){
+        Dog d1 = (Dog) findAnimal(animalName);
+        switch (d1.getTreatPhase()){
+            case STARTED:
+            case PROGRESS:
+            case CURE:
+                return String.format(TREATMENT_PHASE,animalName,d1.getTreatPhase());
+            case CURED:
+                return String.format(TREATMENT_PHASE_CURED,animalName,d1.getTreatPhase());
+            case NONE:
+                return String.format(ANIMAL_IS_HEALTHY, animalName);
+        }
+        return String.format(ANIMAL_IS_HEALTHY,animalName);
     }
 
     public void addSickDog(Dog sickDog) {

@@ -1,5 +1,9 @@
 package com.company.core;
 
+import com.company.enums.TreatmentType;
+import com.company.enums.dog.DogType;
+import com.company.models.animals.Animal;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -61,6 +65,15 @@ public class Run implements RunInter {
             case CalculateValue:
                 result = calculateValue(data);
                 break;
+            case AdoptAnimal:
+                result = adoptAnimal(data);
+                break;
+            case SetTreatmentType:
+                result = setTreatmentType(data);
+                break;
+            case CheckTreatmentPhase:
+                result = checkTreatmentPhase(data);
+                break;
             case Report:
                 result = report();
                 break;
@@ -77,7 +90,7 @@ public class Run implements RunInter {
         String cageName = data[1];
 
         this.dogShelter.addCage(cageName, cageType);
-        return String.format(SUCCESSFULLY_ADDED_CAGE_TYPE, cageType);
+        return String.format(SUCCESSFULLY_ADDED_CAGE_WITH_CAGETYPE, cageName,cageType );
     }
 
 
@@ -118,6 +131,21 @@ public class Run implements RunInter {
 
         return this.dogShelter.calculateValue(cageName);
     }
+    public String setTreatmentType(String[] data) {
+        String animalName = data [0];
+        String treatmentType = data [1];
+        return this.dogShelter.setTreatmentType(animalName, treatmentType);
+    }
+    public String adoptAnimal(String[] data) {
+        String animalName = data[0];
+        String personName = data[1];
+        return this.dogShelter.adoptAnimal(animalName, personName);
+    }
+    public String checkTreatmentPhase(String[] data) {
+        String animalName = data[0];
+        return this.dogShelter.checkTreatmentPhase(animalName);
+    }
+
 
     public String report() {
         return this.dogShelter.report();

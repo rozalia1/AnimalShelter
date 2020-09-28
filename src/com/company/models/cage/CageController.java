@@ -14,21 +14,16 @@ public class CageController {
     private final static int SMALL_CAGE_CAPACITY = 10;
 
     public DogCage createCage(String cageName, String cageType) {
-        DogCage cage;
 
-        switch(CageType.valueOf(cageType.toUpperCase())) {
-            case SMALL:
-                cage = new DogCage(cageName, SMALL_CAGE_CAPACITY, CageType.SMALL);
-                break;
-            case BIG:
-                cage = new DogCage(cageName, BIG_CAGE_CAPACITY, CageType.BIG);
-                break;
-            default:
-                throw new IllegalArgumentException(INVALID_CAGE_TYPE);
+        if (!CageType.checkCageType(cageType)) {
+            throw new IllegalArgumentException(INVALID_CAGE_TYPE);
         }
+        cageType = cageType.toUpperCase();
+        int capacity = CageType.valueOf(cageType) == CageType.BIG ? BIG_CAGE_CAPACITY : SMALL_CAGE_CAPACITY;
 
-        return cage;
+        return new DogCage(cageName, capacity, CageType.valueOf(cageType));
     }
+
 
     public DogCage findCageByName(String cageName, Collection<DogCage> cages) {
         DogCage cage = cages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);

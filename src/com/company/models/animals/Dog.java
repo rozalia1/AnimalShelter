@@ -34,22 +34,6 @@ public class Dog extends Animal {
         this.species = species;
     }
 
-    public Dog addDog(String dogType, String dogName, String dogSpecies, double price) {
-        DogType type;
-        switch(DogType.valueOf(dogType.toUpperCase())) {
-            case SMALL:
-                type = DogType.SMALL;
-                break;
-            case BIG:
-                type = DogType.BIG;
-                break;
-            default:
-                throw new IllegalArgumentException(INVALID_DOG_TYPE);
-        }
-
-        Dog dog = new Dog(dogName, price, type, dogSpecies);
-        return dog;
-    }
 
     @Override
     public void eat(int sizeToEat) {
