@@ -7,7 +7,6 @@ import com.company.models.decoration.Toy;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.company.messages.ExceptionMessages.INVALID_CAGE_TYPE;
 import static com.company.messages.ExceptionMessages.INVALID_DECORATION_TYPE;
 
 
@@ -44,7 +43,19 @@ public class DecorationRepo implements Repository {
 
     @Override
     public Decoration findByType(String type) {
-        Decoration result = this.decorations.stream().filter(d -> d.getClass().getSimpleName().equals(type)).findFirst().orElse(null);
+        Decoration result = this.decorations.stream()
+                .filter(d -> d.getClass().getSimpleName().equals(type)).findFirst().orElse(null);
+
         return result;
+    }
+
+    @Override
+    public boolean isExist(String type) {
+        Decoration exist = this.decorations.stream()
+                .filter(d -> d.getClass().getSimpleName().equals(type)).findFirst().orElse(null);
+
+        if (exist == null) return false;
+
+        return true;
     }
 }

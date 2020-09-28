@@ -1,12 +1,13 @@
 package com.company.models.cage;
 
 import com.company.enums.cage.CageType;
+import com.company.models.animals.Animal;
 import com.company.models.decoration.Decoration;
 
 import java.util.Collection;
 
-import static com.company.messages.ExceptionMessages.INVALID_CAGE_TYPE;
-import static com.company.messages.ExceptionMessages.NO_DECORATION_FOUND;
+import static com.company.messages.ExceptionMessages.*;
+import static com.company.messages.ConstantMessages.*;
 
 public class CageController {
     private final static int BIG_CAGE_CAPACITY = 30;
@@ -29,14 +30,22 @@ public class CageController {
         return cage;
     }
 
-    public DogCage insertDecorationToCage(String cageName, Collection<DogCage> cages, Decoration dec) {
-        if (dec == null) {
-            throw new IllegalArgumentException(String.format(NO_DECORATION_FOUND, dec.getClass().getSimpleName()));
+    public DogCage findCageByName(String cageName, Collection<DogCage> cages) {
+        DogCage cage = cages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
+        return cage;
+    }
+
+    public String calculateValue(String cageName, Collection<DogCage> cages) {
+        DogCage cage = findCageByName(cageName, cages);
+        double sum = 0.0;
+        for (Decoration dec : cage.getCageDecorations()) {
+            sum += dec.getPrice();
         }
 
-        DogCage cage = cages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
-        cage.addDecoration();
+        for (Animal dog1 : cage.getAnimals()) {
+            sum += dog1.getPrice();
+        }
 
-        return null;
+        return String.format(VALUE_CAGE, cageName, sum);
     }
 }

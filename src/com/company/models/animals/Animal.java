@@ -30,8 +30,8 @@ public abstract class Animal {
         return ateSize;
     }
 
-    public void setAteSize(int ateSize) {
-        this.ateSize = ateSize;
+    public void incrAteSize(int ateSize) {
+        this.ateSize += ateSize;
     }
 
     public double getPrice() {
@@ -58,9 +58,7 @@ public abstract class Animal {
         this.treatPhase = treatPhase;
     }
 
-    public void eat(int sizeToEat) {
-        this.ateSize += sizeToEat;
-    }
+    public abstract void eat(int sizeToEat);
 
     public void sleep() {
         System.out.println("ZzzZzz...");

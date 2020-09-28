@@ -1,15 +1,10 @@
 package com.company.core;
 
-import com.company.enums.cage.CageType;
-import com.company.models.cage.Cage;
-import com.company.models.cage.DogCage;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-import static com.company.messages.ExceptionMessages.*;
 import static com.company.messages.ConstantMessages.*;
 
 public class Run implements RunInter {
@@ -97,7 +92,7 @@ public class Run implements RunInter {
         String cageName = data[0];
         String decorationType = data[1];
 
-        return this.controller.insertDecoration(cageName, decorationType);
+        return this.dogShelter.insertDecorationToCage(cageName, decorationType);
     }
 
 
@@ -108,23 +103,23 @@ public class Run implements RunInter {
         String dogSpecies = data[3];
         double price = Double.parseDouble(data[4]);
 
-        return this.controller.addDog(cageName, dogType, dogName, dogSpecies, price);
+        return this.dogShelter.addDog(cageName, dogType, dogName, dogSpecies, price);
     }
 
 
     public String feedDog(String[] data) {
         String dogName = data[0];
 
-        return this.controller.feedDog(dogName);
+        return this.dogShelter.feedDog(dogName);
     }
 
     public String calculateValue(String[] data) {
         String cageName = data[0];
 
-        return this.Cage.calculateValue(cageName);
+        return this.dogShelter.calculateValue(cageName);
     }
 
     public String report() {
-        return this.controller.report();
+        return this.dogShelter.report();
     }
 }

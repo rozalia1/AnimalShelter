@@ -7,10 +7,7 @@ import com.company.repositories.DecorationRepo;
 
 import java.util.Collection;
 
-import static com.company.messages.ConstantMessages.NOT_ENOUGH_CAPACITY;
-import static com.company.messages.ConstantMessages.SUCCESSFULLY_ADDED_DECORATION_IN_CAGE;
-import static com.company.messages.ExceptionMessages.INVALID_CAGE_TYPE;
-import static com.company.messages.ExceptionMessages.NO_DECORATION_FOUND;
+import static com.company.messages.ConstantMessages.*;
 
 public class DogCage extends Cage {
     CageType type;
@@ -39,6 +36,7 @@ public class DogCage extends Cage {
         }
 
         animals.add(dog);
+        capacity += 1;
     }
 
     public String addDecoration(String type, DecorationRepo decRepo) {
@@ -48,5 +46,9 @@ public class DogCage extends Cage {
         return String.format(SUCCESSFULLY_ADDED_DECORATION_IN_CAGE, this.type, getName());
     }
 
-
+    public void feedDogs() {
+        for(Animal a : animals) {
+            a.eat(10);
+        }
+    }
 }

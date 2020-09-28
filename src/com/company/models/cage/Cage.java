@@ -7,8 +7,7 @@ import com.company.repositories.DecorationRepo;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.company.messages.ConstantMessages.DOGS_FED;
-import static com.company.messages.ConstantMessages.VALUE_CAGE;
+import static com.company.messages.ConstantMessages.*;
 
 public abstract class Cage {
     String name;
@@ -35,8 +34,8 @@ public abstract class Cage {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
+    public void incrCapacity(int capacity) {
+        this.capacity += capacity;
     }
 
     public Collection<Decoration> getCageDecorations() {

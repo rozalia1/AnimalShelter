@@ -2,13 +2,15 @@ package com.company.models.animals;
 
 import com.company.enums.dog.DogType;
 
+import static com.company.messages.ExceptionMessages.INVALID_DOG_TYPE;
+
 public class Dog extends Animal {
-    private static final int SMALL_INITIAL_EAT_SIZE = 10;
-    private static final int SMALL_INCREASE_SIZE = 5;
-    private static final int BIG_INITIAL_EAT_SIZE = 5;
-    private static final int BIG_INCREASE_SIZE = 3;
     DogType type;
     String species;
+
+    public Dog() {
+        super("", 0);
+    }
 
     public Dog(String name, double price, DogType type, String species) {
         super(name, price);
@@ -30,5 +32,27 @@ public class Dog extends Animal {
 
     public void setSpecies(String species) {
         this.species = species;
+    }
+
+    public Dog addDog(String dogType, String dogName, String dogSpecies, double price) {
+        DogType type;
+        switch(DogType.valueOf(dogType.toUpperCase())) {
+            case SMALL:
+                type = DogType.SMALL;
+                break;
+            case BIG:
+                type = DogType.BIG;
+                break;
+            default:
+                throw new IllegalArgumentException(INVALID_DOG_TYPE);
+        }
+
+        Dog dog = new Dog(dogName, price, type, dogSpecies);
+        return dog;
+    }
+
+    @Override
+    public void eat(int sizeToEat) {
+        incrAteSize(sizeToEat);
     }
 }

@@ -14,4 +14,5 @@ public class ConstantMessages {
     public static final String ANIMAL_CAN_NOT_NONE = "You can not set treatment NONE";
     public static final String ANIMAL_IS_UNDER_TREATMENT = "The animal is under treatment";
     public static final String ADOPTED_ANIMAL = "Animal %s was adopted by %s";
+    public static final String SUCCESSFULLY_ADDED_DOG = "The %s dog %s is sheltered";
 }

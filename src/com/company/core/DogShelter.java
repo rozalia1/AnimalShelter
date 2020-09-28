@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.company.messages.ConstantMessages.*;
+import static com.company.messages.ExceptionMessages.NO_DECORATION_FOUND;
 
 public class DogShelter implements Shelter {
     DecorationRepo decorationRepo;
@@ -45,33 +46,8 @@ public class DogShelter implements Shelter {
         return dogs;
     }
 
-    public void addDog(Dog dog) {
-        this.dogs.add(dog);
-    }
-
     public Collection<Dog> getSickDogs() {
         return sickDogs;
-    }
-
-    public void addSickDog(Dog sickDog) {
-        this.sickDogs.add(sickDog);
-    }
-
-    public void addCage(String cageName, String cageType) {
-        cages.add(cageController.createCage(cageName, cageType));
-    }
-
-    public String addDecoration(String type) {
-        decorationRepo.addDecorationByType(type);
-        return String.format(SUCCESSFULLY_ADDED_DECORATION_TYPE, type);
-    }
-
-    public String insertDecorationToCage(String cageName, String decorationType) {
-        Decoration dec = decorationRepo.findByType(decorationType);
-        DogCage cage = cageController.insertDecorationToCage(cageName, cages, dec);
-
-        this.decorations.remove(dec);
-        return String.format(SUCCESSFULLY_ADDED_DECORATION_IN_CAGE, decorationType, cageName);
     }
 
     @Override
@@ -132,7 +108,6 @@ public class DogShelter implements Shelter {
         return String.format(ANIMAL_IS_UNDER_TREATMENT);
     }
 
-    @Override
     public Animal findAnimal(String animalName) {
         Dog searchedDog = null;
         for (Dog dog : dogs) {
@@ -144,9 +119,54 @@ public class DogShelter implements Shelter {
         return searchedDog;
     }
 
-    @Override
-    public Decoration findDecoration(String type) {
+    public void addCage(String cageName, String cageType) {
+        // check if there is another cage with this name, if so throw exception
+        cages.add(cageController.createCage(cageName, cageType));
+    }
 
-        return null;
+    public String addDecoration(String type) {
+        decorationRepo.addDecorationByType(type);
+        return String.format(SUCCESSFULLY_ADDED_DECORATION_TYPE, type);
+    }
+
+    public String insertDecorationToCage(String cageName, String decorationType) {
+        Decoration dec = decorationRepo.findByType(decorationType);
+        if (dec == null) {
+            throw new IllegalArgumentException(String.format(NO_DECORATION_FOUND, decorationType));
+        }
+
+        DogCage cage = cageController.findCageByName(cageName, cages);
+        cage.addDecoration(decorationType, decorationRepo);
+        decorationRepo.remove(dec);
+
+        return String.format(SUCCESSFULLY_ADDED_DECORATION_IN_CAGE, decorationType, cageName);
+    }
+
+    public String addDog(String cageName, String dogType, String dogName, String dogSpecies, double price) {
+        Dog createdDog = new Dog();
+        dogs.add(createdDog.addDog(dogType, dogName, dogSpecies, price));
+        for(DogCage cage : cages) {
+            if (cage.getName().toLowerCase() == cageName.toLowerCase()) {
+                cage.addAnimal(createdDog);
+            }
+        }
+
+        return String.format(SUCCESSFULLY_ADDED_DOG_IN_CAGE, dogType, cageName);
+    }
+
+    public void addSickDog(Dog sickDog) {
+        this.sickDogs.add(sickDog);
+    }
+
+    public String feedDog(String cageName) {
+        DogCage cage = this.cages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
+        cage.feedDogs();
+
+        int count = cage.getAnimals().size();
+        return String.format(DOGS_FED, count);
+    }
+
+    public String calculateValue(String cageName) {
+        return cageController.calculateValue(cageName, cages);
     }
 }
