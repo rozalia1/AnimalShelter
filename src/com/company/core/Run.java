@@ -1,9 +1,8 @@
 package com.company.core;
 
-import com.company.commands.AddDog;
-import com.company.commands.Command;
 import com.company.commands.CommandExecutor;
 import com.company.commands.Commands;
+import com.company.commands.DogCommands;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,10 +45,7 @@ public class Run implements RunInter {
         Commands commands = Commands.valueOf(tokens[0]);
         String result = null;
         String[] data = Arrays.stream(tokens).skip(1).toArray(String[]::new);
-
-
         CommandExecutor commandExecutor = new CommandExecutor();
-        commandExecutor.executeOperation(new AddDog(data));
 
         switch (commands) {
             case AddCage:
@@ -62,7 +58,7 @@ public class Run implements RunInter {
                 result = insertDecoration(data);
                 break;
             case AddDog:
-                result = addDog(data);
+                result = commandExecutor.executeCommand(new DogCommands(dogShelter, data));
                 break;
             case FeedDog:
                 result = feedDog(data);
@@ -98,13 +94,11 @@ public class Run implements RunInter {
         return String.format(SUCCESSFULLY_ADDED_CAGE_WITH_CAGETYPE, cageName,cageType );
     }
 
-
     public String addDecoration(String[] data) {
         String type = data[0];
 
         return this.dogShelter.addDecoration(type);
     }
-
 
     public String insertDecoration(String[] data) {
         String cageName = data[0];
@@ -112,18 +106,6 @@ public class Run implements RunInter {
 
         return this.dogShelter.insertDecorationToCage(cageName, decorationType);
     }
-
-
-    public String addDog(String[] data) {
-        String cageName = data[0];
-        String dogType = data[1];
-        String dogName = data[2];
-        String dogSpecies = data[3];
-        double price = Double.parseDouble(data[4]);
-
-        return this.dogShelter.addDog(cageName, dogType, dogName, dogSpecies, price);
-    }
-
 
     public String feedDog(String[] data) {
         String dogName = data[0];

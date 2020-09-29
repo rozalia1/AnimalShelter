@@ -63,17 +63,6 @@ public class DogShelter implements Shelter {
         return sb.toString();
     }
 
-/*    @Override
-    public String setTreatmentType(Animal a, TreatmentType treatType) {
-        if (treatType == TreatmentType.NONE) throw new IllegalArgumentException(ANIMAL_CAN_NOT_NONE);
-
-        a.setTreatType(treatType);
-        a.setTreatPhase(TreatmentPhase.CURE);
-        sickDogs.add((Dog) a);
-        dogs.remove(a);
-        return String.format(SUCCESSFULLY_ADDED_SICK_ANIMAL, "dog");
-    }*/
-
     @Override
     public String treatAnimal(Animal a) {
         if (a.getTreatPhase() != TreatmentPhase.NONE) throw new IllegalArgumentException(ANIMAL_IS_UNDER_TREATMENT);
@@ -160,7 +149,6 @@ public class DogShelter implements Shelter {
             throw new IllegalArgumentException(INVALID_DOG_TYPE);
         }
         dogType = dogType.toUpperCase();
- //       DogType type;
 
         Dog createdDog = new Dog(dogName, price, DogType.valueOf(dogType), dogSpecies);
         dogs.add(createdDog);
