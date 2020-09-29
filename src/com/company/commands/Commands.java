@@ -1,6 +1,6 @@
-package com.company.core;
+package com.company.commands;
 
-public enum Command {
+public enum Commands {
         AddCage,
         AddDecoration,
         InsertDecoration,

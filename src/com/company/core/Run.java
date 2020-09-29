@@ -1,8 +1,9 @@
 package com.company.core;
 
-import com.company.enums.TreatmentType;
-import com.company.enums.dog.DogType;
-import com.company.models.animals.Animal;
+import com.company.commands.AddDog;
+import com.company.commands.Command;
+import com.company.commands.CommandExecutor;
+import com.company.commands.Commands;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,11 +43,15 @@ public class Run implements RunInter {
         String input = this.reader.readLine();
         String[] tokens = input.split("\\s+");
 
-        Command command = Command.valueOf(tokens[0]);
+        Commands commands = Commands.valueOf(tokens[0]);
         String result = null;
         String[] data = Arrays.stream(tokens).skip(1).toArray(String[]::new);
 
-        switch (command) {
+
+        CommandExecutor commandExecutor = new CommandExecutor();
+        commandExecutor.executeOperation(new AddDog(data));
+
+        switch (commands) {
             case AddCage:
                 result = addCage(data);
                 break;
@@ -78,7 +83,7 @@ public class Run implements RunInter {
                 result = report();
                 break;
             case Exit:
-                result = Command.Exit.name();
+                result = Commands.Exit.name();
                 break;
         }
         return result;
