@@ -15,6 +15,7 @@ public enum TreatmentType {
             if (dt.toString().equalsIgnoreCase(str)) {
                 return true;
             }
-        }return false;
+        }
+        return false;
     }
 }

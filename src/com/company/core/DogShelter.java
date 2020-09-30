@@ -2,7 +2,6 @@ package com.company.core;
 
 import com.company.enums.TreatmentPhase;
 import com.company.enums.TreatmentType;
-import com.company.enums.cage.CageType;
 import com.company.enums.dog.DogType;
 import com.company.models.animals.Animal;
 import com.company.models.animals.Dog;
@@ -64,6 +63,61 @@ public class DogShelter implements Shelter {
     }
 
     @Override
+    public String addCage(String cageName, String cageType) {
+        // check if there is another cage with this name, if so throw exception
+        cages.add(cageController.createCage(cageName, cageType));
+        return String.format(SUCCESSFULLY_ADDED_CAGE_WITH_CAGETYPE, cageName,cageType);
+    }
+
+    @Override
+    public String addDecoration(String type) {
+        decorationRepo.addDecorationByType(type);
+        return String.format(SUCCESSFULLY_ADDED_DECORATION_TYPE, type);
+    }
+
+    @Override
+    public String insertDecorationToCage(String cageName, String decorationType) {
+        Decoration dec = decorationRepo.findByType(decorationType);
+        if (dec == null) {
+            throw new IllegalArgumentException(String.format(NO_DECORATION_FOUND, decorationType));
+        }
+
+        DogCage cage = cageController.findCageByName(cageName, cages);
+        cage.addDecoration(decorationType, decorationRepo);
+        decorationRepo.remove(dec);
+
+        return String.format(SUCCESSFULLY_ADDED_DECORATION_IN_CAGE, decorationType, cageName);
+    }
+
+    @Override
+    public String addDog(String cageName, String dogType, String dogName, String dogSpecies, double price) {
+        if (!DogType.checkDogType(dogType)) {
+            throw new IllegalArgumentException(INVALID_DOG_TYPE);
+        }
+        dogType = dogType.toUpperCase();
+
+        Dog createdDog = new Dog(dogName, price, DogType.valueOf(dogType), dogSpecies);
+        dogs.add(createdDog);
+        for(DogCage cage : cages) {
+            if (cage.getName().toLowerCase() == cageName.toLowerCase()) {
+                cage.addAnimal(createdDog);
+            }
+        }
+
+        return String.format(SUCCESSFULLY_ADDED_DOG_IN_CAGE, dogName, cageName);
+
+    }
+
+    @Override
+    public String feedDog(String cageName) {
+        DogCage cage = this.cages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
+        cage.feedDogs();
+
+        int count = cage.getAnimals().size();
+        return String.format(DOGS_FED, count);
+    }
+
+    @Override
     public String treatAnimal(Animal a) {
         if (a.getTreatPhase() != TreatmentPhase.NONE) throw new IllegalArgumentException(ANIMAL_IS_UNDER_TREATMENT);
         a.setTreatPhase(TreatmentPhase.CURE);
@@ -87,79 +141,19 @@ public class DogShelter implements Shelter {
     }
 
     @Override
-    public String adoptAnimal(String animalName, String personName) {
-        Dog d1 = (Dog) findAnimal(animalName);
-        if(isCured(d1)){
-            adoptedDogs.add(d1);
-            dogs.remove(d1);
-            return String.format(ADOPTED_ANIMAL, animalName, personName);
-        }
-
-        return String.format(ANIMAL_IS_UNDER_TREATMENT);
-    }
-
-    public Animal findAnimal(String animalName) {
-        Dog searchedDog = null;
-        for (Dog dog : dogs) {
-            if (dog.getName().equals(animalName)) searchedDog = dog;
-        }
-
-        if (searchedDog == null) throw new IllegalArgumentException();
-
-        return searchedDog;
-    }
-
-   @Override
     public String setTreatmentType(String  animalName, String treatType) {
-        if(!TreatmentType.checkTreatmentType(treatType))throw new  IllegalArgumentException(String.format(INVALID_TREATMENT_TYPE, treatType));
-       Dog d1 = (Dog) findAnimal(animalName);
-            treatType = treatType.toUpperCase();
-           d1.setTreatType(TreatmentType.valueOf(treatType));
-           d1.setTreatPhase(TreatmentPhase.CURE);
-           sickDogs.add(d1);
-           dogs.remove(d1);
-           return String.format(SUCCESSFULLY_ADDED_SICK_ANIMAL, animalName);
-       }
+        if(!TreatmentType.checkTreatmentType(treatType))
+            throw new  IllegalArgumentException(String.format(INVALID_TREATMENT_TYPE, treatType));
 
-    public void addCage(String cageName, String cageType) {
-        // check if there is another cage with this name, if so throw exception
-        cages.add(cageController.createCage(cageName, cageType));
-    }
+        Dog d1 = (Dog) findAnimal(animalName);
 
-    public String addDecoration(String type) {
-        decorationRepo.addDecorationByType(type);
-        return String.format(SUCCESSFULLY_ADDED_DECORATION_TYPE, type);
-    }
+        treatType = treatType.toUpperCase();
+        d1.setTreatType(TreatmentType.valueOf(treatType));
+        d1.setTreatPhase(TreatmentPhase.CURE);
+        sickDogs.add(d1);
+        dogs.remove(d1);
 
-    public String insertDecorationToCage(String cageName, String decorationType) {
-        Decoration dec = decorationRepo.findByType(decorationType);
-        if (dec == null) {
-            throw new IllegalArgumentException(String.format(NO_DECORATION_FOUND, decorationType));
-        }
-
-        DogCage cage = cageController.findCageByName(cageName, cages);
-        cage.addDecoration(decorationType, decorationRepo);
-        decorationRepo.remove(dec);
-
-        return String.format(SUCCESSFULLY_ADDED_DECORATION_IN_CAGE, decorationType, cageName);
-    }
-
-    public String addDog(String cageName, String dogType, String dogName, String dogSpecies, double price) {
-        if (!DogType.checkDogType(dogType)) {
-            throw new IllegalArgumentException(INVALID_DOG_TYPE);
-        }
-        dogType = dogType.toUpperCase();
-
-        Dog createdDog = new Dog(dogName, price, DogType.valueOf(dogType), dogSpecies);
-        dogs.add(createdDog);
-        for(DogCage cage : cages) {
-            if (cage.getName().toLowerCase() == cageName.toLowerCase()) {
-                cage.addAnimal(createdDog);
-            }
-        }
-
-        return String.format(SUCCESSFULLY_ADDED_DOG_IN_CAGE, dogName, cageName);
-
+        return String.format(SUCCESSFULLY_ADDED_SICK_ANIMAL, animalName);
     }
 
     public String checkTreatmentPhase(String animalName){
@@ -181,15 +175,30 @@ public class DogShelter implements Shelter {
         this.sickDogs.add(sickDog);
     }
 
-    public String feedDog(String cageName) {
-        DogCage cage = this.cages.stream().filter(c -> c.getName().equals(cageName)).findFirst().orElse(null);
-        cage.feedDogs();
+    @Override
+    public String adoptAnimal(String animalName, String personName) {
+        Dog d1 = (Dog) findAnimal(animalName);
+        if(isCured(d1)){
+            adoptedDogs.add(d1);
+            dogs.remove(d1);
+            return String.format(ADOPTED_ANIMAL, animalName, personName);
+        }
 
-        int count = cage.getAnimals().size();
-        return String.format(DOGS_FED, count);
+        return String.format(ANIMAL_IS_UNDER_TREATMENT);
     }
 
     public String calculateValue(String cageName) {
         return cageController.calculateValue(cageName, cages);
+    }
+
+    private Animal findAnimal(String animalName) {
+        Dog searchedDog = null;
+        for (Dog dog : dogs) {
+            if (dog.getName().equals(animalName)) searchedDog = dog;
+        }
+
+        if (searchedDog == null) throw new IllegalArgumentException();
+
+        return searchedDog;
     }
 }

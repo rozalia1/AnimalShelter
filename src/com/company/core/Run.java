@@ -1,15 +1,13 @@
 package com.company.core;
 
-import com.company.commands.CommandExecutor;
-import com.company.commands.Commands;
-import com.company.commands.DogCommands;
+import com.company.commands.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-import static com.company.messages.ConstantMessages.*;
+import static com.company.messages.ExceptionMessages.*;
 
 public class Run implements RunInter {
     private DogShelter dogShelter;
@@ -41,76 +39,48 @@ public class Run implements RunInter {
     private String processInput() throws IOException {
         String input = this.reader.readLine();
         String[] tokens = input.split("\\s+");
+        String[] data = Arrays.stream(tokens).skip(2).toArray(String[]::new);
 
-        Commands commands = Commands.valueOf(tokens[0]);
+        if(!Commands.checkIsValidCommand(tokens[0]))
+            throw new  IllegalArgumentException(String.format(INVALID_COMMAND, tokens[0]));
+
+        return executeCommand(tokens[0], tokens[1],data);
+    }
+
+    public String executeCommand(String command, String commandType, String[] data) {
         String result = null;
-        String[] data = Arrays.stream(tokens).skip(1).toArray(String[]::new);
-        CommandExecutor commandExecutor = new CommandExecutor();
 
-        switch (commands) {
-            case AddCage:
-                result = addCage(data);
+        switch(Commands.valueOf(command.toUpperCase())) {
+            case ADD:
+                AddCommand addCommand = new AddCommand(data);
+                result = addCommand.execute(command, commandType, dogShelter);
                 break;
-            case AddDecoration:
-                result = addDecoration(data);
+
+            case INSERT:
+                InsertCommand insertCommand = new InsertCommand(data);
+                result = insertCommand.execute(command, commandType, dogShelter);
                 break;
-            case InsertDecoration:
-                result = insertDecoration(data);
+
+            case FEED:
+                FeedCommand feedCommand = new FeedCommand(data);
+                result = feedCommand.execute(command, commandType, dogShelter);
                 break;
-            case AddDog:
-                result = commandExecutor.executeCommand(new DogCommands(dogShelter, data));
+
+            case CALCULATE:
+            case TREATMENT:
+            case CHECKTREATMENT:
+            case ADOPT:
+            case REPORT:
+                ReportCommand reportCommand = new ReportCommand();
+                result = reportCommand.execute(command, commandType, dogShelter);
                 break;
-            case FeedDog:
-                result = feedDog(data);
-                break;
-            case CalculateValue:
-                result = calculateValue(data);
-                break;
-            case AdoptAnimal:
-                result = adoptAnimal(data);
-                break;
-            case SetTreatmentType:
-                result = setTreatmentType(data);
-                break;
-            case CheckTreatmentPhase:
-                result = checkTreatmentPhase(data);
-                break;
-            case Report:
-                result = report();
-                break;
-            case Exit:
-                result = Commands.Exit.name();
+
+            case EXIT:
+                result = Commands.EXIT.name();
                 break;
         }
+
         return result;
-
-    }
-
-    public String addCage(String[] data) {
-        String cageType = data[0];
-        String cageName = data[1];
-
-        this.dogShelter.addCage(cageName, cageType);
-        return String.format(SUCCESSFULLY_ADDED_CAGE_WITH_CAGETYPE, cageName,cageType );
-    }
-
-    public String addDecoration(String[] data) {
-        String type = data[0];
-
-        return this.dogShelter.addDecoration(type);
-    }
-
-    public String insertDecoration(String[] data) {
-        String cageName = data[0];
-        String decorationType = data[1];
-
-        return this.dogShelter.insertDecorationToCage(cageName, decorationType);
-    }
-
-    public String feedDog(String[] data) {
-        String dogName = data[0];
-
-        return this.dogShelter.feedDog(dogName);
     }
 
     public String calculateValue(String[] data) {
@@ -118,23 +88,21 @@ public class Run implements RunInter {
 
         return this.dogShelter.calculateValue(cageName);
     }
+
     public String setTreatmentType(String[] data) {
         String animalName = data [0];
         String treatmentType = data [1];
         return this.dogShelter.setTreatmentType(animalName, treatmentType);
     }
-    public String adoptAnimal(String[] data) {
-        String animalName = data[0];
-        String personName = data[1];
-        return this.dogShelter.adoptAnimal(animalName, personName);
-    }
+
     public String checkTreatmentPhase(String[] data) {
         String animalName = data[0];
         return this.dogShelter.checkTreatmentPhase(animalName);
     }
 
-
-    public String report() {
-        return this.dogShelter.report();
+    public String adoptAnimal(String[] data) {
+        String animalName = data[0];
+        String personName = data[1];
+        return this.dogShelter.adoptAnimal(animalName, personName);
     }
 }
