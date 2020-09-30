@@ -63,9 +63,12 @@ public class DogShelter implements Shelter {
     }
 
     @Override
-    public String addCage(String cageName, String cageType) {
-        // check if there is another cage with this name, if so throw exception
+    public String addCage(String[] data) {
+        String cageType = data[0];
+        String cageName = data[1];
+
         cages.add(cageController.createCage(cageName, cageType));
+
         return String.format(SUCCESSFULLY_ADDED_CAGE_WITH_CAGETYPE, cageName,cageType);
     }
 
@@ -90,22 +93,32 @@ public class DogShelter implements Shelter {
     }
 
     @Override
-    public String addDog(String cageName, String dogType, String dogName, String dogSpecies, double price) {
+    public String addDog(String[] data) {
+        String cageName = data[0];
+        String dogType = data[1];
+        String dogName = data[2];
+        String dogSpecies = data[3];
+        double price = Double.parseDouble(data[4]);
+
         if (!DogType.checkDogType(dogType)) {
             throw new IllegalArgumentException(INVALID_DOG_TYPE);
         }
         dogType = dogType.toUpperCase();
 
         Dog createdDog = new Dog(dogName, price, DogType.valueOf(dogType), dogSpecies);
-        dogs.add(createdDog);
+        boolean cageFound = false;
         for(DogCage cage : cages) {
-            if (cage.getName().toLowerCase() == cageName.toLowerCase()) {
+            if (cageName.equalsIgnoreCase(cage.getName())) {
                 cage.addAnimal(createdDog);
+                cageFound = true;
             }
         }
 
-        return String.format(SUCCESSFULLY_ADDED_DOG_IN_CAGE, dogName, cageName);
+        if (!cageFound) throw new IllegalArgumentException(String.format(INVALID_CAGE_NAME, cageName));
 
+        dogs.add(createdDog);
+
+        return String.format(SUCCESSFULLY_ADDED_DOG_IN_CAGE, dogName, cageName);
     }
 
     @Override

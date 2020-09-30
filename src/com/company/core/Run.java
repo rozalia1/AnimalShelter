@@ -39,48 +39,14 @@ public class Run implements RunInter {
     private String processInput() throws IOException {
         String input = this.reader.readLine();
         String[] tokens = input.split("\\s+");
-        String[] data = Arrays.stream(tokens).skip(2).toArray(String[]::new);
+        String[] data = Arrays.stream(tokens).skip(1).toArray(String[]::new);
 
-        if(!Commands.checkIsValidCommand(tokens[0]))
+        if(!NewCommands.checkIsValidCommand(tokens[0]))
             throw new  IllegalArgumentException(String.format(INVALID_COMMAND, tokens[0]));
 
-        return executeCommand(tokens[0], tokens[1],data);
-    }
+        CommandInvoker commandInvoker = new CommandInvoker();
 
-    public String executeCommand(String command, String commandType, String[] data) {
-        String result = null;
-
-        switch(Commands.valueOf(command.toUpperCase())) {
-            case ADD:
-                AddCommand addCommand = new AddCommand(data);
-                result = addCommand.execute(command, commandType, dogShelter);
-                break;
-
-            case INSERT:
-                InsertCommand insertCommand = new InsertCommand(data);
-                result = insertCommand.execute(command, commandType, dogShelter);
-                break;
-
-            case FEED:
-                FeedCommand feedCommand = new FeedCommand(data);
-                result = feedCommand.execute(command, commandType, dogShelter);
-                break;
-
-            case CALCULATE:
-            case TREATMENT:
-            case CHECKTREATMENT:
-            case ADOPT:
-            case REPORT:
-                ReportCommand reportCommand = new ReportCommand();
-                result = reportCommand.execute(command, commandType, dogShelter);
-                break;
-
-            case EXIT:
-                result = Commands.EXIT.name();
-                break;
-        }
-
-        return result;
+        return commandInvoker.executeCommand(tokens[0], dogShelter, data);
     }
 
     public String calculateValue(String[] data) {

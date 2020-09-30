@@ -14,10 +14,10 @@ public class CageController {
     private final static int SMALL_CAGE_CAPACITY = 10;
 
     public DogCage createCage(String cageName, String cageType) {
-
         if (!CageType.checkCageType(cageType)) {
             throw new IllegalArgumentException(INVALID_CAGE_TYPE);
         }
+
         cageType = cageType.toUpperCase();
         int capacity = CageType.valueOf(cageType) == CageType.BIG ? BIG_CAGE_CAPACITY : SMALL_CAGE_CAPACITY;
 
